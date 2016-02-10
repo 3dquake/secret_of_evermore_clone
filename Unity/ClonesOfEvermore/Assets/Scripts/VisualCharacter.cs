@@ -22,22 +22,17 @@ public class VisualCharacter : MonoBehaviour {
         Physics.Raycast(transform.position, Vector3.down, out hit, 50f);
 
         transform.position = hit.point + Vector3.up * Controller.height;
-
+        Controller.Move(Vector3.zero);
     }
 
     // Use this for initialization
     void OnEnable () {
 	    DropToFloor();
 	}
-	
-	// Update is called once per frame
-	void Update () {
-        Controller.Move(Vector3.left * 0.5f * Time.deltaTime);
-    }
 
     public void Move(Vector2 dir)
     {
-        
+        //Controller.Move();
     }
     
 }

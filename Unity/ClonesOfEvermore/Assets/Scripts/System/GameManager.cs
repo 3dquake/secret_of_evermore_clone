@@ -1,7 +1,10 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-//Creates other managers, holds all static info, holds inventory, creates visual prefabs based on the info from other managers
+/// <summary>
+/// Creates other managers, holds all static info and inventory, creates visual prefabs.
+/// </summary>
+[AddComponentMenu("Game Manager")]
 public class GameManager : MonoBehaviour {
     
     /// <summary>
@@ -20,6 +23,9 @@ public class GameManager : MonoBehaviour {
     }
     static GameManager m_gm;
 
+    /// <summary>
+    /// Access to Characters
+    /// </summary>
     public CharacterManager Characters
     {
         get
@@ -32,6 +38,9 @@ public class GameManager : MonoBehaviour {
     }
     CharacterManager m_characters;
 
+    /// <summary>
+    /// Access to UI
+    /// </summary>
     public UIManager UI
     {
         get
@@ -44,6 +53,9 @@ public class GameManager : MonoBehaviour {
     }
     UIManager m_ui;
 
+    /// <summary>
+    /// Access to player inventory
+    /// </summary>
     public Inventory Inventory
     {
         get
@@ -53,6 +65,7 @@ public class GameManager : MonoBehaviour {
     }
     Inventory m_inventory;
 
+    //Initialization tells how gamemanager will be initialized
     public InitLayer Initialization = InitLayer.Awake;
     public enum InitLayer
     {
@@ -63,6 +76,15 @@ public class GameManager : MonoBehaviour {
     {
         m_characters = new CharacterManager();
         m_ui = new UIManager();
+
+        Characters.FindAllCharacters();
+        UI.FindAllPanels();
+
+    }
+
+    public void Spawn(string name)
+    {
+
     }
 
     #region MonoBehaviour
