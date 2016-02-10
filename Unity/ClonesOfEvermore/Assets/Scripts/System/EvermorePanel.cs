@@ -1,15 +1,30 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class EvermorePanel : MonoBehaviour {
+/// <summary>
+/// Base class for UI panels
+/// </summary>
+public abstract class EvermorePanel : MonoBehaviour {
+    
+    public bool hideOnStart;
 
-	// Use this for initialization
-	void Start () {
-	
-	}
-	
-	// Update is called once per frame
-	void Update () {
-	
-	}
+    public abstract void Initialize();
+    public abstract void Refresh();
+
+    public void Hide()
+    {
+        gameObject.SetActive(false);
+    }
+
+    public void Show()
+    {
+        gameObject.SetActive(true);
+    }
+
+    void OnEnable()
+    {
+        if (hideOnStart)
+            Hide();
+    }
+
 }
