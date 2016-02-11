@@ -8,47 +8,46 @@ using UnityEngine;
 [RequireComponent(typeof(Camera))]
 public class CameraController : MonoBehaviour
 {
-
     public float lerp;
     public float distance;
 
-    /// <summary>
-    /// Target to follow
-    /// </summary>
-    public Vector3 Target
-    {
-        get
-        {
-            return m_target;
-        }
-        set
-        {
-            m_target = value;
-            OnChanged();
-        }
-    }
-    Vector3 m_target;
+    public VisualCharacter[] Targets;
+    public Transform Current;
 
-    Quaternion initialRotation;
+    Quaternion m_initialRotation;
+    Vector3 m_constPosition = new Vector3(0,10,-10);
+
+    int m_index = 0;
+
+    public void SetNextTarget()
+    {
+        m_index++;
+
+        if (m_index > Targets.Length - 1)
+            m_index = 0;
+
+        Current = Targets[m_index].transform;
+    }
 
     void Awake()
     {
         //Save this value ...
-        initialRotation = transform.rotation;
+        m_initialRotation = transform.rotation;
+
+        if (Current == null)
+            Current = Targets[0].transform;
     }
 
     void Update()
     {
+        //if (Target != GameManager.Instance.Characters.Selected.Link.transform && GameManager.Instance.Characters.Selected != null)
+        //    Target = GameManager.Instance.Characters.Selected.Link.transform;
+
         // So we can lock the camera in it's initial position
-        if (transform.rotation != initialRotation)
-            transform.rotation = initialRotation;
+        if (transform.rotation != m_initialRotation)
+            transform.rotation = m_initialRotation;
 
-        transform.position = 
-        
-    }
-
-    void OnChanged()
-    {
+        transform.position = Vector3.Lerp(transform.position, Current.position + m_constPosition * distance, lerp);
 
     }
 
