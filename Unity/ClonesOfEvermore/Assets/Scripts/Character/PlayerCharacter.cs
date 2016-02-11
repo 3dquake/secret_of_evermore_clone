@@ -16,10 +16,22 @@ public class PlayerCharacter : VisualCharacter {
 
         direction = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
 
-        if (Input.GetButtonUp("Jump"))
-        {
-            GameManager.Instance.Camera.SetNextTarget();
-        }
+        // BUG: this executes twice
+        //if (Input.GetButtonUp("Jump"))
+        //{
+        //    GameManager.Instance.Camera.SetNextTarget();
+        //}
+
+    }
+
+    public void Pickup()
+    {
+        Collider[] items = Physics.OverlapSphere(transform.position + Vector3.down * Controller.height, Controller.radius+10, LayerMask.GetMask("Items"));
+        //GameManager.Instance.Inventory.Add(items[i].GetComponent<>);
+    }
+
+    public void Drop()
+    {
 
     }
 

@@ -4,6 +4,9 @@ using System.Collections;
 [RequireComponent(typeof(CharacterController))]
 public class VisualCharacter : MonoBehaviour {
 
+    /// <summary>
+    /// Property to access the CharacterController component
+    /// </summary>
     public CharacterController Controller
     {
         get
@@ -16,11 +19,38 @@ public class VisualCharacter : MonoBehaviour {
     }
     CharacterController m_controller;
 
-    public int startingHealth, startingMana;
+    /// <summary>
+    /// This will be linked when 'CharacterManager' finds and links all the characters
+    /// </summary>
+    public Character Link
+    {
+        get
+        {
+            return m_link;
+        }
+        set
+        {
+            if (m_link == null)
+            {
+                m_link = value;
+                m_link.Link = this;
+            }
+        }
+    }
+    Character m_link;
 
+    [Header("Starting values")]
+    public string name;
+    [Range(0,100)]
+    public int health, mana, level;
+    [Range(1, 10)]
+    public int attack, defence, agility;
+
+
+    [Header("Other")]
     // This will be later affected by agility
     [Range(1f, 100f)]
-    public float moveSpeed;
+    public float baseSpeed;
 
     [Range(.01f, 1f)]
     public float moveLerp, rotLerp;
@@ -65,7 +95,7 @@ public class VisualCharacter : MonoBehaviour {
 
     public void Attack()
     {
-        
+        Link.Weapon.Attack();
     }
     
 }

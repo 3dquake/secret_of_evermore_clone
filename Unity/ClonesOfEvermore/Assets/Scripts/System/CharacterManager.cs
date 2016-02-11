@@ -43,7 +43,13 @@ public class CharacterManager {
         for (int i = 0; i < characters.Length; i++)
         {
             //Set up starting values
-            m_characters.Add(new Character(characters[i].name, characters[i].startingHealth, characters[i].startingMana));
+            m_characters.Add(new Character( characters[i].name, 
+                                            characters[i].health, 
+                                            characters[i].mana,
+                                            characters[i].attack,
+                                            characters[i].defence,
+                                            characters[i].agility,
+                                            characters[i].level ));
 
             //Link the visual character
             m_characters[i].Link = characters[i];

@@ -4,18 +4,33 @@ using System.Collections;
 //contains all infor related to chars (name, hp, mp, weap, stats, level, att, def,...)
 public class Character {
 
-    public Character(string name, int health, int mana)
+    public Character(string name, int health, int mana, int att, int def, int agi, int level)
     {
-        Stats = new CharacterStats(1,1,1);
+        Stats = new CharacterStats(att,def,agi);
         Health = health;
         Mana = mana;
-        Level = 1;
+        Level = level;
     }
 
     /// <summary>
-    /// Link to the visual character and data
+    /// Link to the visual character and data.
     /// </summary>
-    public VisualCharacter Link;
+    public VisualCharacter Link
+    {
+        get
+        {
+            return m_link;
+        }
+        set
+        {
+            if (!m_link)
+            {
+                m_link = value;
+                m_link.Link = this;
+            }
+        }
+    }
+    VisualCharacter m_link;
 
     public struct CharacterStats
     {
@@ -31,11 +46,33 @@ public class Character {
         public int Agility { get; set; } //Affects moving speed
     }
 
+    /// <summary>
+    /// Name of the character
+    /// </summary>
     public string Name { get; set; }
+
+    /// <summary>
+    /// Health points of the character
+    /// </summary>
     public int Health { get; set; }
+    /// <summary>
+    /// Mana points
+    /// </summary>
     public int Mana { get; set; }
-    //Currently equipped weapon
+    
+    /// <summary>
+    /// Currently equipped weapon
+    /// </summary>
     public Weapon Weapon { get; set; }
+
+    /// <summary>
+    /// Currently equipped armor
+    /// </summary>
+    public Armor Armor { get; set; }
+
+    /// <summary>
+    /// Character level
+    /// </summary>
     public int Level { get; set; }
 
     public CharacterStats Stats;
