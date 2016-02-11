@@ -23,7 +23,22 @@ public class Inventory {
         }
     }
 
+    /// <summary>
+    /// Array of items currently in the inventory
+    /// </summary>
+    public Item[] Items
+    {
+        get
+        {
+            return m_items.ToArray();
+        }
+    }
     List<Item> m_items;
+
+    public Item Selected
+    {
+        get;set;
+    }
 
     public Inventory(int capacity = 8)
     {
@@ -35,18 +50,34 @@ public class Inventory {
     /// If the item already exists, we add more items to that stack.
     /// </summary>
     /// <param name="item">The item to add</param>
-    public void Add(Item item)
-    {
-        Item match = m_items.Find(x => x.Type == item.Type && x.Equals(item));
+    //public void Add(Item item)
+    //{
+    //    Item match = m_items.Find(x => x.Type == item.Type && x.Equals(item));
 
-        // Check if the item exists
+    //    // Check if the item exists
+    //    if (match == null)
+    //    {
+    //        m_items.Add(item);
+    //    }
+    //    else
+    //    {
+    //        match.Amount += item.Amount;
+    //    }
+    //}
+    public void Add(VisualItem item)
+    {
+        //if (item.Link == null)
+        //    item.Link = new Item(item.Amount);
+
+        Item match = m_items.Find(x => x.Type == item.Link.Type && x.Name == item.Name);
         if (match == null)
         {
-            m_items.Add(item);
+            
+            m_items.Add(item.Link);
         }
         else
         {
-            match.Amount += item.Amount;
+            match.Amount += item.Link.Amount;
         }
     }
 
@@ -61,7 +92,7 @@ public class Inventory {
     public Item Remove(Item item, int amount)
     {
         // Don't do anything if it doesn't even exist
-        Item match = m_items.Find(x => x.Type == item.Type && x.Equals(item));
+        Item match = m_items.Find(x => x.Type == item.Type && x.Name == item.Name);
 
         if (match == null)
             return null;
@@ -84,6 +115,7 @@ public class Inventory {
             match.Amount = amount;
         }
 
+        match.Link.SetActive(true);
         return match;
     }
 

@@ -19,27 +19,48 @@ public class CameraController : MonoBehaviour
 
     int m_index = 0;
 
+    void ChangeTarget(int index)
+    {
+        //if (Targets[index] == null)
+        //    return;
+
+        // Tell CharManager that we have a new selection
+        GameManager.Instance.Characters.Selected = Targets[index].Link;
+        Current = Targets[index].transform;
+    }
+
     public void SetNextTarget()
     {
         m_index++;
 
+        //m_index = m_index % Targets.Length-1;
+
         if (m_index > Targets.Length - 1)
             m_index = 0;
 
-        Current = Targets[m_index].transform;
+        ChangeTarget(m_index);
     }
 
-    void Awake()
+    public void Initialize()
     {
+
         //Save this value ...
         m_initialRotation = transform.rotation;
 
         if (Current == null)
-            Current = Targets[0].transform;
+            ChangeTarget(0);
+    }
+    
+    void Follow()
+    {
+        if (!Current)
+            return;
+        transform.position = Vector3.Lerp(transform.position, Current.position + m_constPosition * distance, lerp);
     }
 
     void Update()
     {
+
         //if (Target != GameManager.Instance.Characters.Selected.Link.transform && GameManager.Instance.Characters.Selected != null)
         //    Target = GameManager.Instance.Characters.Selected.Link.transform;
 
@@ -47,8 +68,7 @@ public class CameraController : MonoBehaviour
         if (transform.rotation != m_initialRotation)
             transform.rotation = m_initialRotation;
 
-        transform.position = Vector3.Lerp(transform.position, Current.position + m_constPosition * distance, lerp);
-
+        Follow();
     }
 
 }

@@ -20,6 +20,7 @@ public class VisualCharacter : MonoBehaviour {
     CharacterController m_controller;
 
     /// <summary>
+    /// Link to the character data.
     /// This will be linked when 'CharacterManager' finds and links all the characters
     /// </summary>
     public Character Link
@@ -40,7 +41,7 @@ public class VisualCharacter : MonoBehaviour {
     Character m_link;
 
     [Header("Starting values")]
-    public string name;
+    public string charName;
     [Range(0,100)]
     public int health, mana, level;
     [Range(1, 10)]
@@ -57,6 +58,14 @@ public class VisualCharacter : MonoBehaviour {
 
     Vector3 m_velocity = Vector3.zero;
     Vector3 m_targetVelocity = Vector3.zero;
+
+    public Vector3 Feet
+    {
+        get
+        {
+            return transform.position + Vector3.down * Controller.height;
+        }
+    }
 
     void DropToFloor()
     {
@@ -98,4 +107,14 @@ public class VisualCharacter : MonoBehaviour {
         Link.Weapon.Attack();
     }
     
+    public void Heal(int amount)
+    {
+        Link.Health += amount;
+    }
+
+    public void Hurt(int amount)
+    {
+        Link.Health -= amount;
+    }
+
 }
