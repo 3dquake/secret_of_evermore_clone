@@ -3,7 +3,7 @@ using UnityEngine;
 
 public abstract class Weapon : Item
 {
-    public Weapon() : base(1)
+    public Weapon(string name, string desc, int worth, int amount) : base(name, desc, worth, amount)
     {
         Type = ItemType.Weapon;
     }

@@ -4,12 +4,12 @@ using System.Collections;
 //contains all infor related to chars (name, hp, mp, weap, stats, level, att, def,...)
 public class Character {
 
-    public Character(string name, int health, int mana, int att, int def, int agi, int level)
+    public Character(/*string name, int health, int mana, int att, int def, int agi, int level*/)
     {
-        Stats = new CharacterStats(att,def,agi);
-        Health = health;
-        Mana = mana;
-        Level = level;
+        //Stats = new CharacterStats(att,def,agi);
+        //Health = health;
+        //Mana = mana;
+        //Level = level;
     }
 
     /// <summary>
@@ -32,19 +32,19 @@ public class Character {
     }
     VisualCharacter m_link;
 
-    public struct CharacterStats
-    {
-        public CharacterStats(int att, int def, int agi)
-        {
-            Attack = att;
-            Defence = def;
-            Agility = agi;
-        }
+    //public struct CharacterStats
+    //{
+    //    public CharacterStats(int att, int def, int agi)
+    //    {
+    //        Attack = att;
+    //        Defence = def;
+    //        Agility = agi;
+    //    }
 
-        public int Attack { get; set; }  //Affects damage output
-        public int Defence { get; set; } //Affects damage input
-        public int Agility { get; set; } //Affects moving speed
-    }
+    //    public int Attack { get; set; }  //Affects damage output
+    //    public int Defence { get; set; } //Affects damage input
+    //    public int Agility { get; set; } //Affects moving speed
+    //}
 
     /// <summary>
     /// Name of the character
@@ -75,6 +75,33 @@ public class Character {
     /// </summary>
     public int Level { get; set; }
 
-    public CharacterStats Stats;
+    /// <summary>
+    /// Affects damage output
+    /// </summary>
+    public int Attack
+    {
+        get
+        {
+            return Weapon == null ? 0 : Weapon.Damage;
+        }
+    }
+
+    /// <summary>
+    /// Affects damage input
+    /// </summary>
+    public int Defence
+    {
+        get
+        {
+            return Armor == null ? 0 : Armor.Defence;
+        }
+    } //
+
+    /// <summary>
+    /// Affects moving speed
+    /// </summary>
+    public int Agility { get; set; }
+
+    //public CharacterStats Stats = new CharacterStats();
 
 }

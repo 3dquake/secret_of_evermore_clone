@@ -3,9 +3,12 @@ using System.Collections;
 
 public class Item {
 
-    public Item(int amount)
+    public Item(string name, string desc, int worth, int amount)
     { 
+        Name = name;
+        Description = desc;        
         Amount = amount;
+        Worth = worth;
         Type = ItemType.Generic;
     }
 
@@ -23,15 +26,36 @@ public class Item {
     {
         get; set;
     }
+    public string Description
+    {
+        get;
+        set;
+    }
     public int Amount
     {
         get; set;
     }
+    public int Worth { get; set; }
 
     public Item Clone()
     {
-        return new Item(Amount);
+        Item clone = new Item(Name, Description, Worth, Amount);
+        clone.Link = GameObject.Instantiate<GameObject>(Link.gameObject).GetComponent<VisualItem>();
+        return clone;
     }
 
+    public VisualItem Link
+    {
+        get
+        {
+            return m_link;
+        }
+        set
+        {
+            if (!m_link)
+                m_link = value;
+        }
+    }
+    VisualItem m_link;
 
 }
