@@ -30,8 +30,8 @@ public class GameManager : MonoBehaviour {
     {
         get
         {
-            //if (m_ui == null)
-            //    m_ui = new UIManager();
+            if (m_characters == null)
+                m_characters = new CharacterManager();
 
             return m_characters;
         }
@@ -45,8 +45,8 @@ public class GameManager : MonoBehaviour {
     {
         get
         {
-            //if (m_ui == null)
-            //    m_ui = new UIManager();
+            if (m_ui == null)
+                m_ui = new UIManager();
 
             return m_ui;
         }
@@ -65,6 +65,15 @@ public class GameManager : MonoBehaviour {
     }
     Inventory m_inventory;
 
+    public CameraController Camera
+    {
+        get
+        {
+            return m_camera;
+        }
+    }
+    CameraController m_camera;
+
     //Initialization tells how gamemanager will be initialized
     public InitLayer Initialization = InitLayer.Awake;
     public enum InitLayer
@@ -74,17 +83,18 @@ public class GameManager : MonoBehaviour {
 
     void Initialize()
     {
-        m_characters = new CharacterManager();
+        Characters.FindAllCharacters();
+
         m_ui = new UIManager();
 
-        Characters.FindAllCharacters();
-        UI.FindAllPanels();
+        m_inventory = new Inventory();
+        m_camera = FindObjectOfType<CameraController>();
 
     }
 
-    public void Spawn(string name)
+    public void UI_TogglePanel(string name)
     {
-
+        UI.TogglePanel(name);
     }
 
     #region MonoBehaviour
