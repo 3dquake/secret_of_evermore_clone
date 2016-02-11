@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using UnityEngine;
 
 public class InventoryPanel : EvermorePanel
 {
@@ -12,7 +10,7 @@ public class InventoryPanel : EvermorePanel
 
     public override void Initialize()
     {
-        
+        Debug.Log("Initialized panel '"+name+"'",this);
     }
 }
 
