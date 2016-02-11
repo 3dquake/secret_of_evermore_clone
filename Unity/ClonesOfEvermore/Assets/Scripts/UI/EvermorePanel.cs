@@ -19,19 +19,32 @@ public abstract class EvermorePanel : MonoBehaviour {
     public abstract void Initialize();
     public abstract void Refresh();
 
+    public virtual void OnHide() { }
+    public virtual void OnShow() { }
+
+    public void SetActive(bool active)
+    {
+        if (active && !Active)
+            OnShow();
+        else if (!active && Active)
+            OnHide();
+
+        gameObject.SetActive(active);
+    }
+
     public void Hide()
     {
-        gameObject.SetActive(false);
+        SetActive(false);
     }
 
     public void Show()
     {
-        gameObject.SetActive(true);
+        SetActive(true);
     }
 
     public void Toggle()
     {
-        gameObject.SetActive(!gameObject.activeSelf);
+        SetActive(!Active);
     }
 
 }
