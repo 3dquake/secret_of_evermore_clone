@@ -12,6 +12,9 @@ public class Character {
         Level = 1;
     }
 
+    /// <summary>
+    /// Link to the visual character and data
+    /// </summary>
     public VisualCharacter Link;
 
     public struct CharacterStats
@@ -31,7 +34,8 @@ public class Character {
     public string Name { get; set; }
     public int Health { get; set; }
     public int Mana { get; set; }
-    //public Weapon Weapon { get; set; }
+    //Currently equipped weapon
+    public Weapon Weapon { get; set; }
     public int Level { get; set; }
 
     public CharacterStats Stats;
