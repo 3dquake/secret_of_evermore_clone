@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class Item {
+public abstract class Item {
 
     public Item(string name, string desc, int worth, int amount)
     { 
@@ -39,7 +39,8 @@ public class Item {
 
     public Item Clone()
     {
-        Item clone = new Item(Name, Description, Worth, Amount);
+        Item clone = (Item)MemberwiseClone();
+        //Item clone = new Item(Name, Description, Worth, Amount);
         clone.Link = GameObject.Instantiate<GameObject>(Link.gameObject).GetComponent<VisualItem>();
         return clone;
     }
@@ -53,7 +54,10 @@ public class Item {
         set
         {
             if (!m_link)
+            {
                 m_link = value;
+                m_link.Link = this;
+            }
         }
     }
     VisualItem m_link;

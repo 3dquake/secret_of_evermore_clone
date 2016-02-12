@@ -8,6 +8,18 @@ public class VisualItem : MonoBehaviour
     public string Name, Description;
     public int Worth, Amount;
     
+    public bool Active
+    {
+        get
+        {
+            return gameObject.activeSelf;
+        }
+        set
+        {
+            gameObject.SetActive(value);
+        }
+    }
+
     public Item Link
     {
         get
@@ -28,14 +40,9 @@ public class VisualItem : MonoBehaviour
 
     public Sprite icon;
 
-    public void SetActive(bool active)
-    {
-        gameObject.SetActive(active);
-    }
-
-    void OnEnable()
-    {
-        if (m_link == null)
-            Link = new Item(Name, Description, Worth, Amount);
-    }
+    //void OnEnable()
+    //{
+    //    //if (m_link == null)
+    //    //    Link = new Item(Name, Description, Worth, Amount);
+    //}
 }

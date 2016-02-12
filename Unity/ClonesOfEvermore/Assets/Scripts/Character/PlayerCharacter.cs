@@ -3,30 +3,46 @@ using System.Collections;
 
 public class PlayerCharacter : VisualCharacter {
     
-    Vector3 velocity = Vector3.zero;
-    Vector2 direction;
+    Vector2 m_direction; // Always normalized
 
     public VisualItem equippedWeapon;
     public VisualItem equippedArmor;
 
+    public Vector3 pickupArea
+    {
+        get
+        {
+            return transform.position + Vector3.down * Controller.height;
+        }
+    }
+
     //Tells the character to either listen for input, or not
     public bool listen;
     public float pickupRadius;
-    Vector3 pickupArea;
+    //Vector3 m_pickupArea;
+        
+    public void ChangeCharacter()
+    {
+        GameManager.Instance.Camera.NextTarget();
+    }
 
     void GetInput()
     {
         if (!listen)
+        {
+            if (m_direction != Vector2.zero)
+                m_direction = Vector2.zero;
             return;
+        }
 
-        direction = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
+        m_direction = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical")).normalized;
 
         if (Input.GetButtonDown("Interact"))
         {
             Pickup();
         }
 
-        // BUG: this executes twice
+        // BUG: this executes twice?
         //if (Input.GetButtonUp("Jump"))
         //{
         //    GameManager.Instance.Camera.SetNextTarget();
@@ -34,9 +50,12 @@ public class PlayerCharacter : VisualCharacter {
 
     }
 
+    /// <summary>
+    /// Picks up an item
+    /// </summary>
     public void Pickup()
     {
-        Collider[] items = Physics.OverlapSphere(transform.position + Vector3.down * Controller.height, pickupRadius, LayerMask.GetMask("Items"));
+        Collider[] items = Physics.OverlapSphere(pickupArea, pickupRadius, LayerMask.GetMask("Items"));
 
         if (items.Length == 0)
             return;
@@ -44,23 +63,28 @@ public class PlayerCharacter : VisualCharacter {
         // Take the first occurrence
         VisualItem item = items[0].GetComponent<VisualItem>();
 
-        GameManager.Instance.Inventory.Add(item);
-        item.SetActive(false);
+        // Doesn't have a VisualItem component; abort
+        if (item == null)
+            return;
+
+        // If we can add it, we disable it's visual link
+        if (GameManager.Instance.Inventory.Add(item))
+            item.Active = false;
     }
 
-    void Update()
+    protected override void Think()
     {
         listen = (GameManager.Instance.Characters.Selected == Link);
-        pickupArea = transform.position + Vector3.down * Controller.height;
 
         GetInput();
 
-        Move(direction, 6);
+        Move(m_direction);
+
+        base.Think();
     }
 
     void OnDrawGizmos()
     {
-        pickupArea = transform.position + Vector3.down * Controller.height;
         Gizmos.DrawWireSphere(pickupArea, pickupRadius);
     }
 

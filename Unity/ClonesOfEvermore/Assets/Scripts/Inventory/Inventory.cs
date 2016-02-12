@@ -3,6 +3,23 @@ using System.Collections.Generic;
 
 public class Inventory {
 
+    /// <summary>
+    /// This event will be raised when an item is removed
+    /// </summary>
+    public InventoryEvent OnRemove;
+
+    /// <summary>
+    /// This event will be raised when an item is added
+    /// </summary>
+    public InventoryEvent OnAdd;
+
+    /// <summary>
+    /// This event will be raised when an item is added or removed
+    /// </summary>
+    public InventoryEvent OnChange;
+
+    public delegate void InventoryEvent();
+
     public int Capacity
     {
         get
@@ -64,21 +81,39 @@ public class Inventory {
     //        match.Amount += item.Amount;
     //    }
     //}
-    public void Add(VisualItem item)
+    public bool Add(VisualItem item)
     {
-        //if (item.Link == null)
-        //    item.Link = new Item(item.Amount);
+        // Lets not add anything we can't add
+        if (item.Link == null || item == null)
+            return false;
 
+        Debug.Log(item.Link);
+
+        // Find the nearest match
         Item match = m_items.Find(x => x.Type == item.Link.Type && x.Name == item.Name);
+
+        // Not found; lets add it
         if (match == null)
         {
-            
             m_items.Add(item.Link);
         }
+        // Match found; Lets increase the amount of the match
         else
         {
             match.Amount += item.Link.Amount;
+            // We will get rid of the gameObject for now
+            // FIXME: References in a stack for each item?
+            //GameObject.Destroy(match.Link);
         }
+
+        // Raise events that we added some items
+        if (OnAdd != null)
+            OnAdd();
+
+        if (OnChange != null)
+            OnChange();
+        return true;
+
     }
 
     /// <summary>
@@ -92,17 +127,22 @@ public class Inventory {
     public Item Remove(Item item, int amount)
     {
         // Don't do anything if it doesn't even exist
+        if (item == null)
+            return null;
+
         Item match = m_items.Find(x => x.Type == item.Type && x.Name == item.Name);
 
+        // No match ; no drops
         if (match == null)
             return null;
 
         // The removable amount is higher or equal as what we got in the inventory right now
         if (match.Amount <= amount)
         {
-            // Remove it and return it!
+            // Remove them all as whole
+            // At this point the item retains it's "stack"
             m_items.Remove(match);
-            return match;
+            //return match;
         }
         // The removable amount is smaller than what we have in our inventory
         else if (match.Amount > amount)
@@ -110,12 +150,19 @@ public class Inventory {
             // Decrease amount from the original first
             match.Amount -= amount;
 
-            // Clone it
-            match = match.Clone();
-            match.Amount = amount;
+            // Clone it, if needed?
+            Item temp = match.Clone();
+            temp.Amount = amount;
+            match = temp;
         }
 
-        match.Link.SetActive(true);
+        // Raise events that we dropped some items
+        if (OnRemove != null)
+            OnRemove();
+
+        if (OnChange != null)
+            OnChange();
+
         return match;
     }
 
