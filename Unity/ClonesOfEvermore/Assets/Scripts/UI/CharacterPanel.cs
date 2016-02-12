@@ -15,13 +15,6 @@ public class CharacterPanel : EvermorePanel
     public Image healthBar;
     public Image manaBar;
 
-    float CalcPercentage(float lhs, float rhs)
-    {
-        if (lhs == 0 || rhs == 0)
-            return 0;
-        return lhs - rhs / lhs;
-    }
-
     void UpdateValues()
     {
         attackValue.text = GameManager.Instance.Characters.Selected.Attack.ToString();
@@ -31,10 +24,8 @@ public class CharacterPanel : EvermorePanel
         nameValue.text = GameManager.Instance.Characters.Selected.Name;
         levelValue.text = GameManager.Instance.Characters.Selected.Level.ToString();
 
-        healthBar.fillAmount = CalcPercentage(GameManager.Instance.Characters.Selected.Health, GameManager.Instance.Characters.Selected.Link.health) / 100;
-        manaBar.fillAmount = CalcPercentage(GameManager.Instance.Characters.Selected.Mana, GameManager.Instance.Characters.Selected.Link.mana) / 100;
-
-
+        healthBar.fillAmount = GameManager.Instance.Characters.Selected.Link.health - CalcPercentage(GameManager.Instance.Characters.Selected.Link.health, GameManager.Instance.Characters.Selected.Health);
+        manaBar.fillAmount = GameManager.Instance.Characters.Selected.Link.mana - CalcPercentage(GameManager.Instance.Characters.Selected.Link.mana, GameManager.Instance.Characters.Selected.Mana);
 
     }
 
