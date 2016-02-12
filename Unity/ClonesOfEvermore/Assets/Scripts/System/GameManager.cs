@@ -85,7 +85,23 @@ public class GameManager : MonoBehaviour
     [Header("Inventory settings")]
     public int slots = 12;
 
+    [Header("Camera settings")]
+    public GameObject[] cameraTargets;
+    public float movementSmooth, rotationSmooth, minY, maxY;
+
+    /// <summary>
+    /// Quick global access to dog character
+    /// </summary>
+    public Character Dog { get; private set; }
+    /// <summary>
+    /// Quick global access to human character
+    /// </summary>
+    public Character Human { get; private set; }
+
+    #region GameManager
+
     [Header("Game manager settings")]
+    public float KillZ;
     //Initialization tells how gamemanager will be initialized
     public InitLayer Initialization = InitLayer.Awake;
     public enum InitLayer
@@ -110,43 +126,42 @@ public class GameManager : MonoBehaviour
 
         if (Characters == null)
             m_characters = new CharacterManager();
-        Characters.FindAllCharacters();
+
+        Dog = Characters.FindCharacter(x => x.Link.name == "Character.Dog");
+        Human = Characters.FindCharacter(x => x.Link.name == "Character.Human");
 
         if (Inventory == null)
             m_inventory = new Inventory(slots);
 
-        if (!Camera)
-        {
-            m_camera = FindObjectOfType<CameraController>();
-            if (Camera)
-                Camera.Initialize();
-        }
-        //Camera.Initialize();
+        if (Camera == null)
+            m_camera = new CameraController(cameraTargets);
+
+        CameraStateFollow cameraStateFollow = new CameraStateFollow(movementSmooth, rotationSmooth, minY, maxY);
+        Camera.ChangeState(cameraStateFollow);
 
         if (UI == null)
-        {
             m_ui = new UIManager();
-        }
+
+        Refresh();
 
     }
 
-    public void OnLevelWasLoaded(int level)
-    {
-        Initialize();
-        Camera.Initialize();
-    }
+    //public void OnLevelWasLoaded(int level)
+    //{
+    //    Initialize();
+    //    Camera.Initialize();
+    //}
 
     void Refresh()
     {
         if (UI.AllowMultiple != allowMultiplePanels)
             UI.AllowMultiple = allowMultiplePanels;
 
+        // Refresh opened panels
         UI.RefreshPanels();
-    }
 
-    public void UI_TogglePanel(string name)
-    {
-        UI.TogglePanel(name);
+        // Update StateMachines
+        Camera.Update();
     }
 
     public void LoadScene(string name)
@@ -198,5 +213,16 @@ public class GameManager : MonoBehaviour
     }
 
     #endregion MonoBehaviour
+
+    #endregion GameManager
+
+    #region UI
+
+    public void UI_TogglePanel(string name)
+    {
+        UI.TogglePanel(name);
+    }
+
+    #endregion UI
 
 }

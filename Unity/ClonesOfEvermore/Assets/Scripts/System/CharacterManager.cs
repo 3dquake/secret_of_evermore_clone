@@ -86,7 +86,7 @@ public class CharacterManager {
     public Character FindCharacter(System.Predicate<Character> match)
     {
         Character result = null;
-        for (int i = 0; i < m_characters.Count-1; i++)
+        for (int i = 0; i < m_characters.Count; i++)
         {
             if (match(m_characters[i]))
                 result = m_characters[i];
