@@ -17,6 +17,8 @@ public class InventoryPanelSlot : MonoBehaviour, IPointerClickHandler
     }
     Image m_icon;
 
+    public Text amount;
+
     public Selectable Input
     {
         get
@@ -31,13 +33,6 @@ public class InventoryPanelSlot : MonoBehaviour, IPointerClickHandler
     public Item Item
     {
         get; set;
-    }
-
-
-
-    void OnEnable()
-    {
-        
     }
 
     public void OnPointerClick(PointerEventData eventData)
