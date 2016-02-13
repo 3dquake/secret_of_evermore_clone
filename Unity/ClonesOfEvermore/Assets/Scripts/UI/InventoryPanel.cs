@@ -33,7 +33,7 @@ public class InventoryPanel : EvermorePanel
     {
         inspectorTitle.text = "";
         inspectorDescription.text = "";
-        inspectorPreview.sprite = emptyIcon;
+        inspectorPreview.sprite = GameManager.Instance.emptyIcon;
     }
 
     public void ClearSlots()
@@ -46,40 +46,20 @@ public class InventoryPanel : EvermorePanel
         }
     }
 
-    public void UpdateSlots()
-    {
-
-        ClearSlots();
-
-        for (int i = 0; i < m_items.Length; i++)
-        {
-            slots[i].Icon.sprite = m_items[i].Link.icon;
-            slots[i].Item = m_items[i];
-            slots[i].amount.text = m_items[i].Amount.ToString();
-            //if (m_items[i].Link.icon != null)
-            //    UpdateSlots(i, m_items[i]);
-            //else
-            //    UpdateSlots(i, null);
-        }
-        //Debug.LogFormat("Changed slot '{0}' sprite '{1}' to '{2}'", slots[slot].name, slots[slot].Icon.sprite.name, icon.name);
-        
-    }
-
-    public void RemoveItem(Item item, int amount = 1)
+    public void DropItem(Item item, int amount = 1)
     {
         // Catch the removed item
         Item temp = GameManager.Instance.Inventory.Remove(item, amount);
-
         // No item; abort
         if (temp == null)
             return;
 
         ClearPreview();
         ClearSelection();
-        UpdateSlots();
+        UpdateInventory();
 
         temp.Link.Active = true;
-        temp.Link.transform.position = GameManager.Instance.Characters.Selected.Link.feet;
+        temp.Link.transform.position = GameManager.Instance.Characters.Selected.Link.feet + Vector3.up/2;
     }
 
     // Updates inventory when Inventory raises an event about it
@@ -93,7 +73,18 @@ public class InventoryPanel : EvermorePanel
 
         m_items = GameManager.Instance.Inventory.Items;
 
-        UpdateSlots();
+        ClearSlots();
+
+        for (int i = 0; i < m_items.Length; i++)
+        {
+            slots[i].Icon.sprite = m_items[i].Link.icon;
+            slots[i].Item = m_items[i];
+            slots[i].amount.text = m_items[i].Amount == 1 ? "" : m_items[i].Amount.ToString(); //m_items[i].Amount.ToString()
+            //if (m_items[i].Link.icon != null)
+            //    UpdateSlots(i, m_items[i]);
+            //else
+            //    UpdateSlots(i, null);
+        }
 
         //foreach (Item item in m_items)
         //{
@@ -125,7 +116,7 @@ public class InventoryPanel : EvermorePanel
         //UpdateInventory();
 
         if (Input.GetKeyDown(KeyCode.R))
-            RemoveItem(m_selected);
+            DropItem(m_selected);
 
     }
 
@@ -136,8 +127,13 @@ public class InventoryPanel : EvermorePanel
 
         inspectorDrop.onClick.AddListener(DropSelectedItem);
 
-        GameManager.Instance.Inventory.OnChange += UpdateInventory;
+        GameManager.Instance.Inventory.onChange += UpdateInventory;
 
+    }
+
+    public override void OnHide()
+    {
+        ClearSelection();
     }
 
     public void ClearSelection()
@@ -146,15 +142,27 @@ public class InventoryPanel : EvermorePanel
         m_selected = null;
     }
 
-    public override void OnHide()
-    {
-        ClearSelection();
-    }
-
     public void DropSelectedItem()
     {
-        RemoveItem(m_selected);
+        DropItem(m_selected);
     }
 
+    public void EquipSelectedItem()
+    {
+        switch (m_selected.Type)
+        {
+            case Item.ItemType.Weapon:
+                GameManager.Instance.Human.Weapon = (Weapon)m_selected;
+                break;
+            case Item.ItemType.Armor:
+                GameManager.Instance.Human.Armor = (Armor)m_selected;
+                break;
+        }
+    }
+
+    public void UnequipSelectedItem()
+    {
+
+    }
 }
 

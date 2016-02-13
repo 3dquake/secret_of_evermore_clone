@@ -15,17 +15,23 @@ public class CharacterPanel : EvermorePanel
     public Image healthBar;
     public Image manaBar;
 
+    public Image weapon;
+    public Image armor;
+
     void UpdateValues()
     {
-        attackValue.text = GameManager.Instance.Characters.Selected.Attack.ToString();
-        defenceValue.text = GameManager.Instance.Characters.Selected.Defence.ToString();
+        attackValue.text = GameManager.Instance.Characters.Selected.Weapon != null ? GameManager.Instance.Characters.Selected.Attack.ToString() : "0" ;
+        defenceValue.text = GameManager.Instance.Characters.Selected.Armor != null ? GameManager.Instance.Characters.Selected.Defence.ToString() : "0";
         agilityValue.text = GameManager.Instance.Characters.Selected.Agility.ToString();
 
         nameValue.text = GameManager.Instance.Characters.Selected.Name;
         levelValue.text = GameManager.Instance.Characters.Selected.Level.ToString();
 
-        healthBar.fillAmount = GameManager.Instance.Characters.Selected.Link.health - CalcPercentage(GameManager.Instance.Characters.Selected.Link.health, GameManager.Instance.Characters.Selected.Health);
-        manaBar.fillAmount = GameManager.Instance.Characters.Selected.Link.mana - CalcPercentage(GameManager.Instance.Characters.Selected.Link.mana, GameManager.Instance.Characters.Selected.Mana);
+        healthBar.fillAmount = GameManager.Instance.Characters.Selected.Link.health - Percentage(GameManager.Instance.Characters.Selected.Link.health, GameManager.Instance.Characters.Selected.Health);
+        manaBar.fillAmount = GameManager.Instance.Characters.Selected.Link.mana - Percentage(GameManager.Instance.Characters.Selected.Link.mana, GameManager.Instance.Characters.Selected.Mana);
+
+        weapon.sprite = GameManager.Instance.Characters.Selected.Weapon != null ? GameManager.Instance.Characters.Selected.Weapon.Link.icon : GameManager.Instance.emptyIcon;
+        armor.sprite = GameManager.Instance.Characters.Selected.Armor != null ? GameManager.Instance.Characters.Selected.Armor.Link.icon : GameManager.Instance.emptyIcon;
 
     }
 

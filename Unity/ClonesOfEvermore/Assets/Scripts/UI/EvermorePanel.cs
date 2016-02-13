@@ -47,7 +47,7 @@ public abstract class EvermorePanel : MonoBehaviour {
         SetActive(!Active);
     }
 
-    public float CalcPercentage(float lhs, float rhs)
+    public float Percentage(float lhs, float rhs)
     {
         if (lhs == 0 || rhs == 0)
             return 0;
