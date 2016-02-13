@@ -3,23 +3,28 @@ using System.Collections.Generic;
 
 public class Inventory {
 
+    #region Events
     /// <summary>
     /// This event will be raised when an item is removed
     /// </summary>
-    public InventoryEvent OnRemove;
+    public event InventoryEvent onRemove;
 
     /// <summary>
     /// This event will be raised when an item is added
     /// </summary>
-    public InventoryEvent OnAdd;
+    public event InventoryEvent onAdd;
 
     /// <summary>
     /// This event will be raised when an item is added or removed
     /// </summary>
-    public InventoryEvent OnChange;
+    public event InventoryEvent onChange;
 
     public delegate void InventoryEvent();
+    #endregion
 
+    /// <summary>
+    /// Maximum carry size
+    /// </summary>
     public int Capacity
     {
         get
@@ -32,6 +37,9 @@ public class Inventory {
                 m_items.Capacity = value;
         }
     }
+    /// <summary>
+    /// Count of actual items in inventory
+    /// </summary>
     public int Count
     {
         get
@@ -39,7 +47,6 @@ public class Inventory {
             return (m_items != null) ? m_items.Count : 0;
         }
     }
-
     /// <summary>
     /// Array of items currently in the inventory
     /// </summary>
@@ -50,70 +57,98 @@ public class Inventory {
             return m_items.ToArray();
         }
     }
-    List<Item> m_items;
-
+    /// <summary>
+    /// Currently selected item
+    /// </summary>
     public Item Selected
     {
         get;set;
     }
 
+    // List of inventory items
+    List<Item> m_items;
+    ItemFactory m_factory;
+
     public Inventory(int capacity = 8)
     {
         m_items = new List<Item>(capacity);
+
+        m_factory = new ItemFactory();
+
+        // Initialize item prototypes
+        Item[] items = 
+        {
+            // Generics
+            new Item_Generic(),
+
+            // Weapons
+            new Weapon_Sword(),
+            new Weapon_Melee(),
+            new Weapon_Staff(),
+            new Weapon_Bow(),
+
+            // Armor
+            new Armor_Chestplate(),
+        };
+
+        m_factory.AddRange(items);
+
+    }
+
+    /// <summary>
+    /// Gives the item but doesn't add to the inventory. Perfectly fine for NPC's and one-item characters
+    /// </summary>
+    public Item Give(VisualItem item)
+    {
+        if (item.Link == null)
+            item.Link = (Item)m_factory.Create(item);
+        return item.Link;
     }
 
     /// <summary>
     /// Add an item to the inventory.
-    /// If the item already exists, we add more items to that stack.
+    /// If the item already exists, we add more items to that stack. Unless it's unique
     /// </summary>
     /// <param name="item">The item to add</param>
-    //public void Add(Item item)
-    //{
-    //    Item match = m_items.Find(x => x.Type == item.Type && x.Equals(item));
-
-    //    // Check if the item exists
-    //    if (match == null)
-    //    {
-    //        m_items.Add(item);
-    //    }
-    //    else
-    //    {
-    //        match.Amount += item.Amount;
-    //    }
-    //}
     public bool Add(VisualItem item)
     {
         // Lets not add anything we can't add
-        if (item.Link == null || item == null)
+        if (item == null)
             return false;
 
-        Debug.Log(item.Link);
+        if (item.Link == null)
+            item.Link = (Item)m_factory.Create(item);
+        
+        // Inventory is full, refuse to add any more
+        if (m_items.Count == m_items.Capacity)
+            return false;
 
-        // Find the nearest match
-        Item match = m_items.Find(x => x.Type == item.Link.Type && x.Name == item.Name);
+        // Try to find the item from the inventory
+        Item match = m_items.Find(x => x.Type == item.Link.Type && x.Name == item.niceName);
+
+        // If the item is 'unique' (weapon, armor), it will not be stacked
 
         // Not found; lets add it
-        if (match == null)
+        if (match == null || item.Link.Type != Item.ItemType.Generic)
         {
             m_items.Add(item.Link);
         }
         // Match found; Lets increase the amount of the match
         else
         {
+            //FIXME: references?
             match.Amount += item.Link.Amount;
-            // We will get rid of the gameObject for now
-            // FIXME: References in a stack for each item?
-            //GameObject.Destroy(match.Link);
+            GameObject.Destroy(item.gameObject);
         }
 
         // Raise events that we added some items
-        if (OnAdd != null)
-            OnAdd();
+        if (onAdd != null)
+            onAdd();
 
-        if (OnChange != null)
-            OnChange();
+        if (onChange != null)
+            onChange();
+
         return true;
-
     }
 
     /// <summary>
@@ -150,20 +185,39 @@ public class Inventory {
             // Decrease amount from the original first
             match.Amount -= amount;
 
-            // Clone it, if needed?
-            Item temp = match.Clone();
-            temp.Amount = amount;
+            // Clone the match
+            Item temp = (Item)m_factory.Create(match.Link);
+            temp.Link = GameObject.Instantiate<VisualItem>(match.Link);
+            temp.Amount = amount; // Set the amount of items we just removed
             match = temp;
+            //Item temp = (Item)match.Clone();
+            //temp.Amount = amount;
+            //match = temp;
         }
 
         // Raise events that we dropped some items
-        if (OnRemove != null)
-            OnRemove();
+        if (onRemove != null)
+            onRemove();
 
-        if (OnChange != null)
-            OnChange();
+        if (onChange != null)
+            onChange();
 
         return match;
+    }
+
+    /// <summary>
+    /// Check if player has this kind of item
+    /// </summary>
+    /// <param name="match">Item to search</param>
+    /// <returns>True if found</returns>
+    public bool HasItem(System.Predicate<Item> match)
+    {
+        foreach (Item item in m_items)
+        {
+            if (match(item))
+                return true;
+        }
+        return false;
     }
 
 }

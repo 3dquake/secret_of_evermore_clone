@@ -5,9 +5,13 @@ using UnityEngine;
 public class VisualItem : MonoBehaviour
 {
     [Header("Starting values")]
-    public string Name, Description;
-    public int Worth, Amount;
-    
+    public string niceName;
+    [Tooltip("Item datatype name")]
+    public string itemName;
+    public string description;
+    public int worth, amount;
+    public Item.ItemType Type;
+
     public bool Active
     {
         get
@@ -20,6 +24,9 @@ public class VisualItem : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Link to the item's data
+    /// </summary>
     public Item Link
     {
         get
