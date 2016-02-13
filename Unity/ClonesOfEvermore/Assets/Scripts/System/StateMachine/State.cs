@@ -1,71 +1,76 @@
 ﻿using System;
 using System.Collections.Generic;
 
-/// <summary>
-/// Abstract state class for FSMs
-/// </summary>
-public abstract class State
+namespace StateMachines
 {
-    public State(params State[] states)
+    /// <summary>
+    /// Abstract state class for FSMs
+    /// </summary>
+    public abstract class State
     {
-        if (states != null)
+        public State(params State[] states)
         {
-            m_states = new List<State>(states.Length);
-            m_states.AddRange(states);
+            if (states != null)
+            {
+                m_states = new List<State>(states.Length);
+                m_states.AddRange(states);
+            }
+            else
+            {
+                m_states = new List<State>(2);
+            }
         }
-        else
+
+        /// <summary>
+        /// Name of the state
+        /// </summary>
+        public string Name { get; set; }
+        //List of allowed states
+        List<State> m_states;
+
+        public object StateMachine { get; set; }
+
+        /// <summary>
+        /// Is the specified state allowed?
+        /// </summary>
+        /// <param name="state"></param>
+        /// <returns>True if allowed</returns>
+        public bool IsAllowed(State state)
         {
-            m_states = new List<State>(2);
+            return m_states.Contains(state);
         }
-    }
 
-    /// <summary>
-    /// Name of the state
-    /// </summary>
-    public string Name { get; set; }
-    //List of allowed states
-    List<State> m_states;
+        /// <summary>
+        /// Add a state
+        /// </summary>
+        /// <param name="state"></param>
+        public void AddState(State state)
+        {
+            if (!m_states.Contains(state))
+                m_states.Add(state);
+        }
 
-    /// <summary>
-    /// Is the specified state allowed?
-    /// </summary>
-    /// <param name="state"></param>
-    /// <returns>True if allowed</returns>
-    public bool IsAllowed(State state)
-    {
-        return m_states.Contains(state);
-    }
+        /// <summary>
+        /// Remove a state
+        /// </summary>
+        /// <param name="state"></param>
+        public void RemoveState(State state)
+        {
+            if (m_states.Contains(state))
+                m_states.Remove(state);
+        }
 
-    /// <summary>
-    /// Add a state
-    /// </summary>
-    /// <param name="state"></param>
-    public void AddState(State state)
-    {
-        if (!m_states.Contains(state))
-            m_states.Add(state);
-    }
+        /// <summary>
+        /// Clear states
+        /// </summary>
+        public void Clear()
+        {
+            m_states.Clear();
+        }
 
-    /// <summary>
-    /// Remove a state
-    /// </summary>
-    /// <param name="state"></param>
-    public void RemoveState(State state)
-    {
-        if (m_states.Contains(state))
-            m_states.Remove(state);
-    }
+        public abstract void Enter();
+        public abstract void Think();
+        public abstract void Exit();
 
-    /// <summary>
-    /// Clear states
-    /// </summary>
-    public void Clear()
-    {
-        m_states.Clear();
-    }
-
-    public abstract void Enter();
-    public abstract void Think();
-    public abstract void Exit();
-
+    } 
 }

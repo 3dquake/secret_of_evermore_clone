@@ -1,19 +1,18 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-//contains all infor related to chars (name, hp, mp, weap, stats, level, att, def,...)
+/// <summary>
+/// Character class holds all the data related to characters
+/// </summary>
 public class Character {
 
-    public Character(/*string name, int health, int mana, int att, int def, int agi, int level*/)
+    public Character()
     {
-        //Stats = new CharacterStats(att,def,agi);
-        //Health = health;
-        //Mana = mana;
-        //Level = level;
+
     }
 
     /// <summary>
-    /// Link to the visual character and data.
+    /// Link to the visual character.
     /// </summary>
     public VisualCharacter Link
     {
@@ -31,23 +30,9 @@ public class Character {
         }
     }
     VisualCharacter m_link;
-
-    //public struct CharacterStats
-    //{
-    //    public CharacterStats(int att, int def, int agi)
-    //    {
-    //        Attack = att;
-    //        Defence = def;
-    //        Agility = agi;
-    //    }
-
-    //    public int Attack { get; set; }  //Affects damage output
-    //    public int Defence { get; set; } //Affects damage input
-    //    public int Agility { get; set; } //Affects moving speed
-    //}
-
+    
     /// <summary>
-    /// Name of the character
+    /// Name of this character
     /// </summary>
     public string Name { get; set; }
 
@@ -56,14 +41,30 @@ public class Character {
     /// </summary>
     public int Health { get; set; }
     /// <summary>
-    /// Mana points
+    /// Mana points of this character
     /// </summary>
     public int Mana { get; set; }
     
     /// <summary>
     /// Currently equipped weapon
     /// </summary>
-    public Weapon Weapon { get; set; }
+    public Weapon Weapon
+    {
+        get
+        {
+            return m_weapon;
+        }
+        set
+        {
+            if (m_weapon != null)
+                m_weapon.OnDequip();
+            m_weapon = value;
+            m_weapon.Owner = this;
+            m_weapon.OnEquip();
+        }
+    }
+    Weapon m_weapon;
+
 
     /// <summary>
     /// Currently equipped armor
@@ -78,24 +79,12 @@ public class Character {
     /// <summary>
     /// Affects damage output
     /// </summary>
-    public int Attack
-    {
-        get
-        {
-            return Weapon == null ? 0 : Weapon.Damage;
-        }
-    }
+    public int Attack { get { return Weapon != null ? Weapon.Damage : 0; } }
 
     /// <summary>
     /// Affects damage input
     /// </summary>
-    public int Defence
-    {
-        get
-        {
-            return Armor == null ? 0 : Armor.Defence;
-        }
-    } //
+    public int Defence { get { return Armor != null ? Armor.Defence : 0; } }
 
     /// <summary>
     /// Affects moving speed

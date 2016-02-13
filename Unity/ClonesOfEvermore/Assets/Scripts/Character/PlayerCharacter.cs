@@ -1,12 +1,19 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+using StateMachines.AI;
+using StateMachines.AI.States;
+
 public class PlayerCharacter : VisualCharacter {
     
-    Vector2 m_direction; // Always normalized
+    AIStateMachine Behaviour;
 
-    public VisualItem equippedWeapon;
-    public VisualItem equippedArmor;
+    Vector3 m_direction; // Always normalized
+
+    [Header("AI settings")]
+    public GameObject followTarget;
+    public float maxFollowRange;
+    public float minFollowRange;
 
     public Vector3 pickupArea
     {
@@ -28,18 +35,16 @@ public class PlayerCharacter : VisualCharacter {
 
     void GetInput()
     {
-        if (!listen)
-        {
-            if (m_direction != Vector2.zero)
-                m_direction = Vector2.zero;
-            return;
-        }
-
-        m_direction = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical")).normalized;
+        m_direction = new Vector3(Input.GetAxis("Horizontal"), 0, Input.GetAxis("Vertical")).normalized;
 
         if (Input.GetButtonDown("Interact"))
         {
             Pickup();
+        }
+
+        if (Link.Weapon != null && Input.GetButtonDown("Fire1"))
+        {
+            Link.Weapon.Attack();
         }
 
         // BUG: this executes twice?
@@ -72,15 +77,41 @@ public class PlayerCharacter : VisualCharacter {
             item.Active = false;
     }
 
+    protected override void Begin()
+    {
+        Behaviour = new AIStateMachine(this);
+        AIStateCompanion state = new AIStateCompanion(this);
+
+        state.target = followTarget;
+        state.minRange = minFollowRange;
+        state.maxRange = maxFollowRange;
+
+        Behaviour.AddState(state);
+        Behaviour.ChangeState(state);
+    }
     protected override void Think()
     {
         listen = (GameManager.Instance.Characters.Selected == Link);
+        
 
-        GetInput();
+        //if (!listen)
+        //{
+        //    if (m_direction != Vector3.zero)
+        //        m_direction = Vector3.zero;
+        //    return;
+        //}
 
-        Move(m_direction);
+        if (!listen)
+        {
 
-        base.Think();
+            Behaviour.UpdateState();
+        }
+        else
+        {
+            GetInput();
+            Move(m_direction);
+            base.Think();
+        }
     }
 
     void OnDrawGizmos()
