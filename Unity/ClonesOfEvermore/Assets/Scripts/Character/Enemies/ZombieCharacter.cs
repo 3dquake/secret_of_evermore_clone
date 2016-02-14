@@ -30,12 +30,11 @@ public class ZombieCharacter : VisualCharacter
 
         if (m_state.chaseRange != chaseRange)
             m_state.chaseRange = chaseRange;
+
     }
 
     protected override void Begin()
     {
-        Debug.Log("begin");
-
         base.Begin();
     }
 

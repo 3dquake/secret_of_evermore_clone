@@ -27,30 +27,28 @@ public class Trigger : MonoBehaviour {
 
     bool Filter(Collider other)
     {
-        foreach (string tag in filter)
+        foreach (string name in filter)
         {
-            return (other.tag == tag);
+            if (other.name == name)
+                return true;
         }
         return false;
     }
 
     public void OnTriggerStay(Collider other)
     {
-        Debug.Log("STAY:"+other.name);
         if (onTriggerStay != null && Filter(other))
             onTriggerStay(other);
     }
 
     public void OnTriggerExit(Collider other)
     {
-        Debug.Log("EXIT:"+other.name);
         if (onTriggerExit != null && Filter(other))
             onTriggerExit(other);
     }
 
     public void OnTriggerEnter(Collider other)
-    {
-        Debug.Log("ENTER:"+other.name);
+    { 
         if (onTriggerEnter != null && Filter(other))
             onTriggerEnter(other);
     }
