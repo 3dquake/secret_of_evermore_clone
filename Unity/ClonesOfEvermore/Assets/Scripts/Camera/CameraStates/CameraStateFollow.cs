@@ -46,12 +46,12 @@ public class CameraStateFollow : CameraState
 
     void LookAt(GameObject target)
     {
-        camera.transform.rotation = Quaternion.Slerp(camera.transform.rotation, Quaternion.LookRotation((target.transform.position - camera.transform.position).normalized), m_slerp);
+        camera.transform.rotation = Quaternion.Slerp(GameManager.Instance.Camera.activeCamera.transform.rotation, Quaternion.LookRotation((target.transform.position - GameManager.Instance.Camera.activeCamera.transform.position).normalized), m_slerp);
     }
 
     void Follow(GameObject target)
     {
-        camera.transform.position = ClampY(Vector3.Lerp(camera.transform.position, target.transform.position + m_constPosition/* * Distance*/, m_lerp), MinY, MaxY);
+        GameManager.Instance.Camera.activeCamera.transform.position = ClampY(Vector3.Lerp(GameManager.Instance.Camera.activeCamera.transform.position, target.transform.position + m_constPosition/* * Distance*/, m_lerp), MinY, MaxY);
         //camera.transform.position =  ;
     }
 
@@ -64,6 +64,7 @@ public class CameraStateFollow : CameraState
 
     public override void Enter()
     {
+        camera = GameManager.Instance.Camera.activeCamera;
     }
 
     public override void Exit()

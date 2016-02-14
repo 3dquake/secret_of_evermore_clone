@@ -44,11 +44,11 @@ namespace StateMachines.AI.States
             //m_direction.y = 0;
             //Character.Move(m_direction.normalized);
 
-            if (distance > chaseRange)
+            if (distance > chaseRange || m_target.isDead)
                 m_target = null;
             else if (distance <= attackRange && !m_target.isDead)
             {
-                m_target.Hurt(Character.Link.Attack);
+                Character.Attack();
             }
         }
 

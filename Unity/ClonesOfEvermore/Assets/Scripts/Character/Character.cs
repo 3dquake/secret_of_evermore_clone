@@ -61,6 +61,7 @@ public class Character {
             m_weapon = value;
             m_weapon.Owner = this;
             m_weapon.OnEquip();
+            //Debug.LogFormat("'{0}'('{3}') equipped '{1}'(Owner '{2}'), {4}", Name, Weapon, Weapon.Owner.Link.name, Link.name);
         }
     }
     Weapon m_weapon;
@@ -69,7 +70,22 @@ public class Character {
     /// <summary>
     /// Currently equipped armor
     /// </summary>
-    public Armor Armor { get; set; }
+    public Armor Armor
+    {
+        get
+        {
+            return m_armor;
+        }
+        set
+        {
+            if (m_armor != null)
+                m_armor.OnDequip();
+            m_armor = value;
+            m_armor.Owner = this;
+            m_armor.OnEquip();
+        }
+    }
+    Armor m_armor;
 
     /// <summary>
     /// Character level

@@ -14,9 +14,14 @@ public class Armor_Chestplate : Armor
         Type = ItemType.Armor;
     }
 
+    public override void OnEquip()
+    {
+        Defence = 5;
+    }
+
     public override object Clone()
     {
-        return new Armor_Chestplate(Name, Description, Worth);
+        return MemberwiseClone();
     }
 }
 

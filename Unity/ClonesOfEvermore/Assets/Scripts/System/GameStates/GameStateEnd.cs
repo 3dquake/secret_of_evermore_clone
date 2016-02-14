@@ -8,7 +8,9 @@ namespace StateMachines.Game.States
     {
         public override void Enter()
         {
-
+            Debug.Log("Enter");
+            if (Application.isEditor)
+                UnityEditor.EditorApplication.isPlaying = false;
         }
 
         public override void Exit()

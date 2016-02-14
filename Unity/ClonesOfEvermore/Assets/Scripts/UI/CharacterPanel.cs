@@ -20,6 +20,9 @@ public class CharacterPanel : EvermorePanel
 
     void UpdateValues()
     {
+        if (GameManager.Instance.Characters.Selected == null)
+            return;
+
         attackValue.text = GameManager.Instance.Characters.Selected.Weapon != null ? GameManager.Instance.Characters.Selected.Attack.ToString() : "0" ;
         defenceValue.text = GameManager.Instance.Characters.Selected.Armor != null ? GameManager.Instance.Characters.Selected.Defence.ToString() : "0";
         agilityValue.text = GameManager.Instance.Characters.Selected.Agility.ToString();

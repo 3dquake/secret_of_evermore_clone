@@ -22,7 +22,7 @@ public class Weapon_Staff : Weapon
 
     public override object Clone()
     {
-        return new Weapon_Staff(Name, Description, Worth);
+        return MemberwiseClone();
     }
 }
 

@@ -23,6 +23,6 @@ public class Item_Generic : Item
 
     public override object Clone()
     {
-        return new Item_Generic(Name, Description, Worth, Amount);
+        return MemberwiseClone();
     }
 }

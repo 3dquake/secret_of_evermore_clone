@@ -23,11 +23,11 @@ namespace StateMachines
 
         List<T> m_listStates;
 
-        public T Current
+        public string Current
         {
             get
             {
-                return m_current;
+                return m_current.GetType().Name;
             }
         }
 
@@ -43,7 +43,7 @@ namespace StateMachines
         {
             if (!m_listStates.Contains(state))
             {
-                if (state.Name == "")
+                if (state.Name == "" || state.Name == null)
                     state.Name = state.GetType().Name;
 
                 state.StateMachine = this;

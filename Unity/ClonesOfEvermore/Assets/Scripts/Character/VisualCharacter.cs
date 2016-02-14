@@ -79,6 +79,7 @@ public class VisualCharacter : MonoBehaviour {
     // Current velocity
     Vector3 m_velocity = Vector3.zero;
     Vector3 m_targetVelocity = Vector3.zero;
+    Vector3 m_push = Vector3.zero;
     Quaternion m_lookRotation = Quaternion.identity;
     Vector3 m_gravity = new Vector3(0, 9.81f, 0);
 
@@ -158,8 +159,8 @@ public class VisualCharacter : MonoBehaviour {
         Think();
 
         // Set velocity
-        m_velocity = Vector3.Lerp(m_velocity, m_targetVelocity * Time.deltaTime, moveLerp);
-        m_targetVelocity = Vector3.zero; // Reset target velocity. Prevents "onpressing" and stops AI
+        m_velocity = Vector3.Lerp(m_velocity, ((m_targetVelocity + m_push) - m_gravity) * Time.deltaTime, moveLerp);
+        m_targetVelocity = m_push = Vector3.zero; // Reset target velocity. Prevents "onpressing" and stops AI
 
         if (m_velocity != Vector3.zero)
         {
@@ -219,7 +220,7 @@ public class VisualCharacter : MonoBehaviour {
         Look(direction.normalized);
 
         // Set target velocity
-        m_targetVelocity = (direction * (baseSpeed * (1 + Link.Agility / 20))) - m_gravity;
+        m_targetVelocity = (direction * (baseSpeed * (1 + Link.Agility / 20)));
 
     }
 
@@ -260,7 +261,8 @@ public class VisualCharacter : MonoBehaviour {
     /// <param name="amount">Amount of damage</param>
     public void Hurt(int amount)
     {
-        Link.Health -= amount;
+        Link.Health -= (amount - Link.Defence);
+        //m_push = (transform.forward + transform.up * -10).normalized * -amount;
     }
 
     /// <summary>
@@ -283,6 +285,10 @@ public class VisualCharacter : MonoBehaviour {
     /// Character initialization method
     /// </summary>
     protected virtual void Begin() { }
-
+    
+    void OnDrawGizmos()
+    {
+        Gizmos.DrawRay(transform.position, m_velocity.normalized * (m_velocity.magnitude * 10));
+    }
 
 }

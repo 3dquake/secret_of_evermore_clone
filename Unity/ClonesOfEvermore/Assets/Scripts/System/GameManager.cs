@@ -1,8 +1,8 @@
 ﻿using UnityEngine;
 using UnityEngine.SceneManagement;
 
-using System.Collections;
 using System;
+using System.Collections;
 
 using StateMachines.Game;
 using StateMachines.Game.States;
@@ -14,21 +14,7 @@ using StateMachines.Game.States;
 public class GameManager : MonoBehaviour
 {
 
-    /// <summary>
-    /// Describes the game's current state
-    /// </summary>
-    public GameStateMachine GameState
-    {
-        get
-        {
-            return m_gameState;
-        }
-        private set
-        {
-            m_gameState = value;
-        }
-    }
-    GameStateMachine m_gameState;
+    #region Systems
 
     /// <summary>
     /// Global access
@@ -50,15 +36,28 @@ public class GameManager : MonoBehaviour
     static GameManager m_gm;
 
     /// <summary>
+    /// Describes the game's current state
+    /// </summary>
+    public GameStateMachine GameState
+    {
+        get
+        {
+            return m_gameState;
+        }
+        private set
+        {
+            m_gameState = value;
+        }
+    }
+    GameStateMachine m_gameState;
+
+    /// <summary>
     /// Access to Characters
     /// </summary>
     public CharacterManager Characters
     {
         get
         {
-            //if (m_characters == null)
-            //    m_characters = new CharacterManager();
-
             return m_characters;
         }
     }
@@ -71,9 +70,6 @@ public class GameManager : MonoBehaviour
     {
         get
         {
-            //if (m_ui == null)
-            //    m_ui = new UIManager();
-
             return m_ui;
         }
     }
@@ -91,6 +87,9 @@ public class GameManager : MonoBehaviour
     }
     Inventory m_inventory;
 
+    /// <summary>
+    /// Access to camera controls
+    /// </summary>
     public CameraController Camera
     {
         get
@@ -100,40 +99,72 @@ public class GameManager : MonoBehaviour
     }
     CameraController m_camera;
 
+    #endregion
+
+    //
+
+    #region Settings
+
+    [Header("Game manager settings")]
+    public string startState; // GameStateMachine starting state
+    public float KillHeight; // KillHeight kills characters falling below this Y value
+    public InitLayer Initialization = InitLayer.Awake;
+    public UpdateLayer Updating = UpdateLayer.Update;
+
     [Header("UI Manager settings")]
-    public bool allowMultiplePanels;
+    public bool allowMultiplePanels; // Multiple panels showing?
     public Sprite emptyIcon;
 
     [Header("Inventory settings")]
-    public int slots = 12;
+    public int slots = 12; // Maximum slots in inventory
     [ColorUsage(true)]
-    public Color normalColor, equippedColor;
+    public Color normalColor, equippedColor; // Colors
 
     [Header("Camera settings")]
-    public GameObject[] cameraTargets;
-    public float movementSmooth, rotationSmooth, minY, maxY;
+    public GameObject[] cameraTargets; // Targets for camera to follow
+    public float movementSmooth, rotationSmooth, minY, maxY; // Camera movement settings
+
+    #endregion
+
+    //
+
+    #region Static fields
 
     /// <summary>
     /// Quick global access to dog character
     /// </summary>
-    public Character Dog { get; private set; }
+    public Character Dog
+    {
+        get { return m_dog; }
+        set { if (m_dog == null) m_dog = value; }
+    }
+    Character m_dog;
+
     /// <summary>
     /// Quick global access to human character
     /// </summary>
-    public Character Human { get; private set; }
+    public Character Human
+    {
+        get { return m_human; }
+        set { if (m_human == null) m_human = value; }
+    }
+    Character m_human;
+
+    #endregion
+
+    //
+    //
+    //
 
     #region GameManager
 
-    [Header("Game manager settings")]
-    public float KillHeight;
     //Initialization tells how gamemanager will be initialized
-    public InitLayer Initialization = InitLayer.Awake;
     public enum InitLayer
     {
         Start, Awake, Enabled
     }
 
-    public UpdateLayer Updating = UpdateLayer.Update;
+    // Updatelayers; When do we update?
     public enum UpdateLayer
     {
         Update, FixedUpdate, LateUpdate
@@ -141,77 +172,134 @@ public class GameManager : MonoBehaviour
 
     void Initialize()
     {
-        //if (FindObjectOfType<GameManager>())
-        //{
-        //    Destroy(this);
-        //}
+        // Prevents duplicate GameManagers, but allows for easier testing
+        if (Instance != FindObjectOfType<GameManager>())
+        {
+            gameObject.SetActive(false);
+            return;
+        }
 
+        // Don't destroy this; other GameManagers in other scenes should be disabled before build and for testing should use GameStateInit
         DontDestroyOnLoad(this);
+
+        // Create new inventory
+        if (m_inventory == null)
+        {
+            m_inventory = new Inventory(slots);
+        }
+
+        ///////////////////////
+
+        // Create new CharacterManager
+        if (m_characters == null)
+        {
+            // No auto; let game states search by their own
+            m_characters = new CharacterManager(false);
+        }
+
+        ///////////////////////
+
+        // Create new CameraController
+        if (m_camera == null)
+        {
+            // Add targets after scene load
+            m_camera = new CameraController(/*Human.Link.gameObject, Dog.Link.gameObject*/);
+
+            // Add states, but change on GameStatePlay
+            m_camera.AddState(new CameraStateFollow(movementSmooth, rotationSmooth, minY, maxY));
+            //Camera.ChangeState("CameraStateFollow");
+        }
+
+        ///////////////////////
+
+        // Create a new UI Manager
+        if (m_ui == null)
+        {
+            //BUG: this seems to be null'd after first scene load?
+            m_ui = new UIManager(false);
+        }
+
+        ///////////////////////
 
         // Create new GameStateMachine
         if (GameState == null)
+        {
             GameState = new GameStateMachine();
 
-        // Add some states
-        GameState.AddStatesRange(new GameStatePlay(), new GameStateStart(), new GameStateEnd());
+            // Add some states
+            GameState.AddStatesRange(new GameStatePlay(), new GameStateStart(), new GameStateEnd(), new GameStateLoad(), new GameStateInit());
+            GameState.ChangeState(startState); // Set starting statea
+            GameState.UpdateState(); // Update to that state immidiately
 
-        // Create new inventory
-        if (Inventory == null)
-            m_inventory = new Inventory(slots);
+        }
 
-        // Create new CharacterManager
-        if (Characters == null)
-            m_characters = new CharacterManager();
+        ///////////////////////
 
-        // Find characters
-        Dog = Characters.FindCharacter(x => x.Link.name == "Character.Dog");
-        Human = Characters.FindCharacter(x => x.Link.name == "Character.Human");
-
-        // Create new CameraController
-        if (Camera == null)
-            m_camera = new CameraController(cameraTargets);
-
-        // Create new States and request state change
-        CameraStateFollow cameraStateFollow = new CameraStateFollow(movementSmooth, rotationSmooth, minY, maxY);
-        Camera.AddState(cameraStateFollow);
-        Camera.ChangeState(cameraStateFollow);
-
-        // Create a new UI Manager
-        if (UI == null)
-            m_ui = new UIManager();
-
-        // Refresh GameManager once
+        // Refresh GameManager once after all systems are initialized
         Refresh();
 
     }
 
-    //public void OnLevelWasLoaded(int level)
-    //{
-    //    Initialize();
-    //    Camera.Initialize();
-    //}
-
+    // Updates this GameManager
     void Refresh()
     {
-        if (UI.AllowMultiple != allowMultiplePanels)
-            UI.AllowMultiple = allowMultiplePanels;
-
-        // Refresh opened panels
-        UI.RefreshPanels();
-
-        // Update StateMachines
-        Camera.Update();
+        GameState.UpdateState();
     }
 
+    #endregion GameManager
+
+    //
+    //
+    //
+
+    #region Hooks
+
+    /// <summary>
+    /// Changes GameState to specified state, if available
+    /// </summary>
+    /// <param name="name">Name of the state</param>
+    public void ChangeState(string name)
+    {
+        GameState.ChangeState(name);
+    }
+
+    /// <summary>
+    /// Load a scene, if available
+    /// </summary>
+    /// <param name="name"></param>
     public void LoadScene(string name)
     {
         SceneManager.LoadScene(name, LoadSceneMode.Single);
     }
 
+    /// <summary>
+    /// Quit the application
+    /// </summary>
     public void Quit()
     {
         Application.Quit();
     }
+
+    //public void UITogglePanel(string name)
+    //{
+    //    UI.TogglePanel(name);
+    //}
+
+    //public void UIShowPanel(string name)
+    //{
+    //    UI.ShowPanel(name);
+    //}
+
+    //public void UIHidePanel(string name)
+    //{
+    //    UI.HidePanel(name);
+    //}
+
+    #endregion
+
+    //
+    //
+    //
 
     #region MonoBehaviour
 
@@ -252,18 +340,5 @@ public class GameManager : MonoBehaviour
     }
 
     #endregion MonoBehaviour
-
-    #endregion GameManager
-
-    #region UI
-
-    // Hook for Unity in-editor UI buttons
-
-    public void UI_TogglePanel(string name)
-    {
-        UI.TogglePanel(name);
-    }
-
-    #endregion UI
 
 }

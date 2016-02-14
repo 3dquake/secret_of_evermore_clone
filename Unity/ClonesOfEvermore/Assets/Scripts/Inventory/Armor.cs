@@ -17,6 +17,18 @@ public abstract class Armor : Item
         Type = ItemType.Armor;
     }
 
-    public int Defence { get; set; }
+    public int Defence { get; protected set; }
+    public Character Owner { get; set; }
+
+    public virtual void OnEquip()
+    {
+        Debug.LogFormat("'{0}' equipped '{1}'", Owner.Name, Name);
+    }
+    public virtual void OnDequip()
+    {
+        Debug.LogFormat("'{0}' dequipped '{1}'", Owner.Name, Name);
+        Owner = null;
+    }
+
 }
 

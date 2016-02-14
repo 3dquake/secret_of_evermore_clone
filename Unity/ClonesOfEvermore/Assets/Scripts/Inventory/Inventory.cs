@@ -67,6 +67,13 @@ public class Inventory {
 
     // List of inventory items
     List<Item> m_items;
+    public ItemFactory Factory
+    {
+        get
+        {
+            return m_factory;
+        }
+    }
     ItemFactory m_factory;
 
     public Inventory(int capacity = 8)
@@ -100,9 +107,11 @@ public class Inventory {
     /// </summary>
     public Item Give(VisualItem item)
     {
-        if (item.Link == null)
-            item.Link = (Item)m_factory.Create(item);
-        return item.Link;
+        //if (item == null)
+        VisualItem clone = GameObject.Instantiate(item);
+        clone.Link = (Item)m_factory.Create(item);
+        clone.gameObject.SetActive(false);
+        return clone.Link;
     }
 
     /// <summary>

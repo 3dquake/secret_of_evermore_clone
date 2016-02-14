@@ -14,7 +14,7 @@ public abstract class CameraState : State
     }
 
     public GameObject target { get; set; }
-    public Camera camera { get; private set; }
+    public Camera camera { get; set; }
 }
 
 /// <summary>
@@ -26,7 +26,13 @@ public class CameraController : StateMachine<CameraState>
     /// Default constructor
     /// </summary>
     /// <param name="characters">Array of targets to follow</param>
-    public CameraController(params GameObject[] _targets)
+    public CameraController()
+    {
+        
+        //ChangeTarget(m_targetList[0]);
+    }
+
+    public void FindCameras(params GameObject[] _targets)
     {
         m_mainCamera = Camera.main;
         if (!activeCamera)
@@ -37,26 +43,7 @@ public class CameraController : StateMachine<CameraState>
         m_targetList.AddRange(_targets);
         m_enumerator = m_targetList.GetEnumerator();
         m_enumerator.MoveNext();
-
-        ChangeTarget(m_targetList[0]);
     }
-
-    // <summary>
-    // Camera smoothing value. Clamped between 0.0 and 1.0
-    // </summary>
-    //public float Smoothing
-    //{
-    //    get
-    //    {
-    //        return m_lerp;
-    //    }
-    //    set
-    //    {
-    //        m_lerp = Mathf.Clamp(m_lerp, 0f, 1f);
-    //    }
-    //}
-    //public float m_lerp;
-    //public float Distance { get; set; }
 
     /// <summary>
     /// Current target we are following
@@ -80,6 +67,22 @@ public class CameraController : StateMachine<CameraState>
     {
         get;
         set;
+    }
+
+    public void AddTargetRange(params GameObject[] targets)
+    {
+        foreach (GameObject target in targets)
+        {
+            AddTarget(target);
+        }
+    }
+
+    public void AddTarget(GameObject target)
+    {
+        if (!m_targetList.Contains(target))
+        {
+            m_targetList.Add(target);
+        }
     }
 
     /// <summary>

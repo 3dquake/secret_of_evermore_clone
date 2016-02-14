@@ -77,11 +77,11 @@ public class CharacterManager {
         character.Name = vcharacter.charName == "" ? vcharacter.name : vcharacter.charName;
         character.Link = vcharacter;
 
-        if (vcharacter.weapon != null)
-        {
-            GameManager.Instance.Inventory.Give(vcharacter.weapon);
-            character.Weapon = (Weapon)vcharacter.weapon.Link;
-        }
+        //if (vcharacter.weapon != null)
+        //{
+            //GameManager.Instance.Inventory.Give(vcharacter.weapon);
+            character.Weapon = (Weapon)GameManager.Instance.Inventory.Give(vcharacter.weapon);
+        //}
 
         if (vcharacter.armor != null)
         {
@@ -106,6 +106,11 @@ public class CharacterManager {
                 result = m_characters[i];
         }
         return result;
+    }
+
+    public Character[] FindCharactersWithWeapon(System.Type type)
+    {
+        return m_characters.FindAll(x => x.Weapon.GetType() == type).ToArray();
     }
 
 }

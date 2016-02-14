@@ -14,6 +14,8 @@ public class PlayerCharacter : VisualCharacter {
     public GameObject followTarget;
     public float maxFollowRange;
     public float minFollowRange;
+    public float chaseRange;
+    public float attackRange;
 
     public Vector3 pickupArea
     {
@@ -44,7 +46,7 @@ public class PlayerCharacter : VisualCharacter {
 
         if (Link.Weapon != null && Input.GetButtonDown("Fire1"))
         {
-            Link.Weapon.Attack();
+            Attack();
         }
 
         // BUG: this executes twice?
@@ -85,6 +87,8 @@ public class PlayerCharacter : VisualCharacter {
         state.target = followTarget;
         state.minRange = minFollowRange;
         state.maxRange = maxFollowRange;
+        state.chaseRange = chaseRange;
+        state.attackRange = attackRange;
 
         Behaviour.AddState(state);
         Behaviour.ChangeState(state);
@@ -114,9 +118,9 @@ public class PlayerCharacter : VisualCharacter {
         }
     }
 
-    void OnDrawGizmos()
-    {
-        Gizmos.DrawWireSphere(pickupArea, pickupRadius);
-    }
+    //void OnDrawGizmos()
+    //{
+    //    Gizmos.DrawWireSphere(pickupArea, pickupRadius);
+    //}
 
 }

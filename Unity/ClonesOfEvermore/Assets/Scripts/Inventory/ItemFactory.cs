@@ -3,6 +3,10 @@ using System.Collections.Generic;
 
 using UnityEngine;
 
+/// <summary>
+/// ItemFactory class.
+/// Clones and instantiates all
+/// </summary>
 public class ItemFactory
 {
 
@@ -11,18 +15,24 @@ public class ItemFactory
 
     public ItemFactory()
     {
-
     }
 
+    /// <summary>
+    /// Add item prototypes to factory
+    /// </summary>
+    /// <param name="items">Item prototypes</param>
     public void AddRange(params Item[] items)
     {
         if (m_itemList == null)
             m_itemList = new List<Item>(items.Length);
-
         m_itemList.AddRange(items);
-
     }
 
+    /// <summary>
+    /// Creates a new item
+    /// </summary>
+    /// <param name="vitem">VisualItem to create from</param>
+    /// <returns>Item</returns>
     public object Create(VisualItem vitem)
     {
         object clone = null;
@@ -40,6 +50,7 @@ public class ItemFactory
             }
 
         }
+
         return clone;
     }
 
