@@ -17,6 +17,9 @@ public class InventoryPanelSlot : MonoBehaviour, IPointerClickHandler
     }
     Image m_icon;
 
+    public Image slot;
+    public Text amount;
+
     public Selectable Input
     {
         get
@@ -33,11 +36,13 @@ public class InventoryPanelSlot : MonoBehaviour, IPointerClickHandler
         get; set;
     }
 
-
-
-    void OnEnable()
+    void Update()
     {
-        
+        if ((GameManager.Instance.Human.Weapon == Item || GameManager.Instance.Human.Armor == Item) && Item != null)
+            slot.color = GameManager.Instance.equippedColor;
+        else
+            slot.color = GameManager.Instance.normalColor;
+
     }
 
     public void OnPointerClick(PointerEventData eventData)

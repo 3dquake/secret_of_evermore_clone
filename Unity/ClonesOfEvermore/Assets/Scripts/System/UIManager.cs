@@ -25,19 +25,35 @@ public class UIManager {
     {
         if (auto)
         {
-            // Find all panels from the root canvas
-            if (!m_root)
-                m_root = GameObject.FindObjectOfType<Canvas>();
-            EvermorePanel[] panels = m_root.GetComponentsInChildren<EvermorePanel>();
-
-            // Initialize lists, and add the panels
-            m_panels = new List<EvermorePanel>(panels.Length);
-            m_panels.AddRange(panels);
+            FindAllPanels();
 
             // Panel handling, initialize them, and refresh them once
             InitializeAllPanels();
             RefreshAllPanels();
         }
+    }
+
+    public void FindAllPanels()
+    {
+        // Find all panels from the root canvas
+        if (!m_root)
+            m_root = GameObject.FindObjectOfType<Canvas>();
+
+        // Double check
+        if (!m_root)
+        {
+            Debug.LogWarning("Warning: No suitable canvas root found!");
+            return;
+        }
+
+        EvermorePanel[] panels = m_root.GetComponentsInChildren<EvermorePanel>();
+
+        // Initialize lists, and add the panels
+        m_panels = new List<EvermorePanel>(panels.Length);
+        m_panels.AddRange(panels);
+
+        InitializeAllPanels();
+        RefreshAllPanels();
     }
 
     /// <summary>
@@ -63,16 +79,7 @@ public class UIManager {
                 panel.Hide();
         }
     }
-
-    //void InitializePanels()
-    //{
-    //    foreach (EvermorePanel panel in m_panels)
-    //    {
-    //        if (panel.Active)
-    //            panel.Initialize();
-    //    }
-    //}
-
+    
     /// <summary>
     /// Display the specified panel
     /// </summary>

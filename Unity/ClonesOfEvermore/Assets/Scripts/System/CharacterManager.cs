@@ -27,6 +27,7 @@ public class CharacterManager {
     {
         get
         {
+            // Lazy initialization
             if (m_enemies == null)
             {
                 foreach (Character character in m_characters)
@@ -65,28 +66,41 @@ public class CharacterManager {
         // Setup function for characters
 
         // Setup stats
-        //character.Attack = vcharacter.attack;
-        //character.Defence = vcharacter.defence;
+        //character.Attack = vcharacter.attack; // Based off from equipped weapon
+        //character.Defence = vcharacter.defence; // Based off from equpped armor
         character.Agility = vcharacter.agility;
 
         character.Level = vcharacter.level;
         character.Health = vcharacter.health;
         character.Mana = vcharacter.mana;
 
-        // Equip system?
-        //character.Armor = an armor;
-        //character.Weapon = a weapon;
-
         character.Name = vcharacter.charName == "" ? vcharacter.name : vcharacter.charName;
         character.Link = vcharacter;
+
+        //if (vcharacter.weapon != null)
+        //{
+            //GameManager.Instance.Inventory.Give(vcharacter.weapon);
+            character.Weapon = (Weapon)GameManager.Instance.Inventory.Give(vcharacter.weapon);
+        //}
+
+        if (vcharacter.armor != null)
+        {
+            GameManager.Instance.Inventory.Give(vcharacter.armor);
+            character.Armor = (Armor)vcharacter.armor.Link;
+        }
 
 
     }
 
+    /// <summary>
+    /// Searches the scene for specific character
+    /// </summary>
+    /// <param name="match">Type of character to look for</param>
+    /// <returns>Character if found, otherwise null</returns>
     public Character FindCharacter(System.Predicate<Character> match)
     {
         Character result = null;
-        for (int i = 0; i < m_characters.Count-1; i++)
+        for (int i = 0; i < m_characters.Count; i++)
         {
             if (match(m_characters[i]))
                 result = m_characters[i];
@@ -94,13 +108,9 @@ public class CharacterManager {
         return result;
     }
 
-    //Character GetNextCharacter()
-    //{
-    //    m_characters.IndexOf(Selected);
-    //    for (int i = 0; i < m_characters.Count-1; i++)
-    //    {
+    public Character[] FindCharactersWithWeapon(System.Type type)
+    {
+        return m_characters.FindAll(x => x.Weapon.GetType() == type).ToArray();
+    }
 
-    //    }
-    //}
-    
 }
